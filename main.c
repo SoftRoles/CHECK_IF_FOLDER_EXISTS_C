@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
   }
 }
 
+#include <sys/stat.h> // stat
 int fld_abs_exs(char *fld)
 {
   struct stat sb;
