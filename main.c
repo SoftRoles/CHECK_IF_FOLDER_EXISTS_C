@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
   const char *folder;
   //folder = "C:\\Users\\SaMaN\\Desktop\\Ppln";
   // folder = "C:\\Users\\hsyn\\Desktop\\SoftRoles\\CHECK_IF_FOLDER_EXISTS_C\\tmp";
-  folder = add_two_chr(get_cwd(),"\\tmp");
+  folder = add_two_chr(get_cwd(), "\\build");
   struct stat sb;
-  printf("%s\n",add_two_chr(get_cwd(),"\\tmp"));
+  printf("%s\n", folder);
   if (stat(folder, &sb) == 0 && S_ISDIR(sb.st_mode))
   {
     printf("YES\n");
@@ -35,35 +35,37 @@ int main(int argc, char *argv[])
   }
 }
 
-int fld_abs_exs(char *fld){
+int fld_abs_exs(char *fld)
+{
   struct stat sb;
   if (stat(fld, &sb) == 0 && S_ISDIR(sb.st_mode))
-  {
     return 1;
-  }
   else
-  {
-    return NULL;
-  }
+    return 0;
 }
 
-int fld_rel_exs(char *fld){
+#include <stdlib.h> // free, perror
+#include <sys/stat.h> // stat
+int fld_rel_exs(char *fld)
+{
   struct stat sb;
-  if (stat(add_two_chr(get_cwd(),fld), &sb) == 0 && S_ISDIR(sb.st_mode))
+  char *cwd = get_cwd();
+  char *pth = add_two_chr(cwd, fld);
+  if (stat(pth, &sb) == 0 && S_ISDIR(sb.st_mode))
   {
+    free(cwd);
+    free(pth);
     return 1;
   }
   else
-  {
-    return NULL;
-  }
+    return 0;
 }
 
 #ifdef _WIN32
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>
-char* add_two_chr(const char *ch1, const char *ch2)
+char *add_two_chr(const char *ch1, const char *ch2)
 {
   char *ch3 = (char *)malloc(1 + strlen(ch1) + strlen(ch2));
   strcpy_s(ch3, 1 + strlen(ch1) + strlen(ch2), ch1);
@@ -76,10 +78,11 @@ char* add_two_chr(const char *ch1, const char *ch2)
 #include <direct.h> // _getcwd
 #include <stdlib.h> // free, perror
 #include <string.h> // strlen
-char* get_cwd()
+char *get_cwd()
 {
   char *buf;
-  if ((buf = _getcwd(NULL, 0)) == NULL){
+  if ((buf = _getcwd(NULL, 0)) == NULL)
+  {
     perror("_getcwd error");
     return NULL;
   }
